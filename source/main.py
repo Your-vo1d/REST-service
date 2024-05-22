@@ -1,12 +1,14 @@
-from fastapi import FastAPI, HTTPException
-from database import cursor, conn
-from model import User
-import secrets
-from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import asyncio
+import secrets
+
+import uvicorn
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from fastapi import FastAPI, HTTPException
+
+from database import conn, cursor
+from model import User
 
 app = FastAPI()
-
 
 
 # Функция для обновления секретных кодов
@@ -45,6 +47,11 @@ scheduler.add_job(update_secret_codes, "interval", hours=1)
 scheduler.start()
 
 # Запускаем цикл обновления секретных кодов при старте приложения
+
+
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(update_secret_codes())
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
