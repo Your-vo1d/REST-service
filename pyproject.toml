@@ -13,6 +13,8 @@ pydantic = "^2.7.1"
 pydantic-settings = "^2.2.1"
 uvicorn = {extras = ["standard"], version = "^0.29.0"}
 pytest = "^8.2.1"
+apscheduler = "^3.10.4"
+asyncio = "^3.4.3"
 
 
 [build-system]
