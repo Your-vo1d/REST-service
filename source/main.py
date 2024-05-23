@@ -3,7 +3,7 @@ import secrets
 
 import uvicorn
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 
 from database import conn, cursor
 from model import User
@@ -33,12 +33,29 @@ async def login(user: User):
     if db_user:
         db_password = db_user[2]
         if user.password == db_password:
+            user.secret_code = db_user[3]
             return {"message": "User exists and password matches", "secret_key": db_user[3]}
         else:
             raise HTTPException(
                 status_code=401, detail="Password does not match")
     else:
         raise HTTPException(status_code=404, detail="User not found")
+
+
+@app.get("/information")
+async def get_information(secret_code: str = Query(...)):
+    cursor.execute(
+        "SELECT username, salary, promotion_date FROM users WHERE secret_code=?", (secret_code,))
+    db_user = cursor.fetchone()
+    if db_user:
+        return {
+            "username": db_user[0],
+            "salary": db_user[1],
+            "promotion_date": db_user[2]
+        }
+    else:
+        raise HTTPException(
+            status_code=404, detail="Invalid or expired secret code")
 
 
 # Создаем и запускаем планировщик
