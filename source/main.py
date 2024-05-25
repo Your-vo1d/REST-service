@@ -5,8 +5,8 @@ import uvicorn
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 from fastapi import FastAPI, HTTPException, Query
 
-from database import conn, cursor
-from model import User
+from source.database.database import conn, cursor
+from source.models.model import User
 
 app = FastAPI()
 
