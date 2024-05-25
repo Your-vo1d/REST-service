@@ -1,1 +1,1 @@
-from .config import BASE_DIR, DATA_DIR, DATABASE_PATH
+from .config import BASE_DIR, DATA_DIR, DATABASE_PATH, BASE_URL
