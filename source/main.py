@@ -19,8 +19,8 @@ async def update_secret_codes():
         for user in users:
             new_secret_code = secrets.token_hex(16)
             cursor.execute(
-                "UPDATE users SET secret_code = ? WHERE username = ?", (
-                    new_secret_code, user[0])
+                "UPDATE users SET secret_code = ? WHERE username = ?",
+                (new_secret_code, user[0]),
             )
         conn.commit()
         await asyncio.sleep(3600)  # Ожидание 1 час перед следующим обновлением
@@ -34,10 +34,12 @@ async def login(user: User):
         db_password = db_user[2]
         if user.password == db_password:
             user.secret_code = db_user[3]
-            return {"message": "User exists and password matches", "secret_key": db_user[3]}
+            return {
+                "message": "User exists and password matches",
+                "secret_key": db_user[3],
+            }
         else:
-            raise HTTPException(
-                status_code=401, detail="Password does not match")
+            raise HTTPException(status_code=401, detail="Password does not match")
     else:
         raise HTTPException(status_code=404, detail="User not found")
 
@@ -45,17 +47,18 @@ async def login(user: User):
 @app.get("/information")
 async def get_information(secret_code: str = Query(...)):
     cursor.execute(
-        "SELECT username, salary, promotion_date FROM users WHERE secret_code=?", (secret_code,))
+        "SELECT username, salary, promotion_date FROM users WHERE secret_code=?",
+        (secret_code,),
+    )
     db_user = cursor.fetchone()
     if db_user:
         return {
             "username": db_user[0],
             "salary": db_user[1],
-            "promotion_date": db_user[2]
+            "promotion_date": db_user[2],
         }
     else:
-        raise HTTPException(
-            status_code=404, detail="Invalid or expired secret code")
+        raise HTTPException(status_code=404, detail="Invalid or expired secret code")
 
 
 # Создаем и запускаем планировщик
@@ -69,6 +72,7 @@ scheduler.start()
 @app.on_event("startup")
 async def startup_event():
     asyncio.create_task(update_secret_codes())
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
