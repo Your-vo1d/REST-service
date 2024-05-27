@@ -3,21 +3,21 @@ import sqlite3
 
 from source import DATABASE_PATH
 
-
-
 # Подключение к базе данных
 conn = sqlite3.connect(DATABASE_PATH)
 cursor = conn.cursor()
 # Функция для создания базы данных
 def create_database():
     # Создание таблицы users
-    cursor.execute('''CREATE TABLE IF NOT EXISTS users
+    cursor.execute(
+        """CREATE TABLE IF NOT EXISTS users
                     (id INTEGER PRIMARY KEY AUTOINCREMENT,
                     username TEXT,
                     password TEXT,
                     secret_code TEXT,
                     salary REAL,
-                    promotion_date DATE)''')
+                    promotion_date DATE)"""
+    )
     conn.commit()
     conn.close()
 
