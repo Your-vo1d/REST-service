@@ -1,30 +1,14 @@
 import requests
 import pytest
 from source import BASE_URL
+from source.database.users_data import valid_user, invalid_user
 
-valid_user = {
-    "username": "testuser",
-    "password": "testpassword",
-    "secret_code": "0fbd35e9405c601d4dcc8e12d0a1651d",
-    "salary": 0,
-    "promotion_date": ""
-}
-
-invalid_user = {
-    "username": "invaliduser",
-    "password": "wrongpassword",
-    "secret_code": "wrongsecret",
-    "salary": 60000.0,
-    "promotion_date": "2022-12-31"
-}
 
 # Тест для входа пользователя
-
-
 def test_login():
     # Отправляем запрос на вход с правильными учетными данными
     response = requests.post(f"{BASE_URL}/login", json=valid_user)
-    assert response.status_code == 200
+    assert response.status_code == 200  # Обработка ответа сервиса (200)
     data = response.json()
     assert "message" in data
     assert "secret_key" in data
@@ -54,8 +38,9 @@ def secret_key():
 
 
 def test_information(secret_key):
-    response = requests.get(f"{BASE_URL}/information",
-                            params={"secret_code": secret_key})
+    response = requests.get(
+        f"{BASE_URL}/information", params={"secret_code": secret_key}
+    )
     assert response.status_code == 200
     data = response.json()
     assert "username" in data
@@ -68,8 +53,9 @@ def test_information(secret_key):
     print("Дата повышения:", data["promotion_date"])
 
     # Отправляем запрос на получение информации с неправильным секретным кодом
-    response = requests.get(f"{BASE_URL}/information",
-                            params={"secret_code": "invalid_secret"})
+    response = requests.get(
+        f"{BASE_URL}/information", params={"secret_code": "invalid_secret"}
+    )
     assert response.status_code == 404
     data = response.json()
     assert "detail" in data
